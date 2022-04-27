@@ -29,21 +29,25 @@ classdef PreguntaI
             obj.Y = repmat(beta(1),N,1) + beta(2)*obj.X1+beta(3)*obj.X2+beta(4)*obj.X3 + obj.U; 
         end
 
-        function [coef, err_st] = PreguntaI_est(obj,regresores)
+        function [coef, err_st] = PreguntaI_est(obj,bool_cte,regresores)
+            if bool_cte
+                regresores = [ones(obj.N,1) regresores];
+            end
             mco = @(Y,X) (X'*X)\(X'*Y);
-            coef = mco(obj.Y ,[ones(obj.N,1) regresores] );
-            err_st = obj.Y - [ ones(obj.N,1) regresores]*coef;
+            coef = mco(obj.Y ,regresores );
+            err_st = obj.Y - regresores*coef;
         end
-        function [test_t_est] = testt(obj,regresores)
+        function [test_t_est ] = testt(obj,bool_cte,regresores)
             test_t_est = zeros(2,1);
-            [coef, err_st] = PreguntaI_est(obj,regresores);
-            var_est = (err_st'*err_st) \ (obj.N-4);
-            mat_varcov = (var_est^2) \ ([ ones(obj.N,1) regresores]'*[ ones(obj.N,1) regresores]) ;
-            test_t_est(1)= coef(1) / mat_varcov(1,1);
-            test_t_est(2)= coef(2) / mat_varcov(2,2);
+            [coef, err_st] = PreguntaI_est(obj,bool_cte,regresores);
+            var_est = (err_st'*err_st) / (obj.N - 4);
+            mat_varcov = (var_est^2) * (inv((regresores') * regresores)) ;
+            test_t_est(1)= coef(2) / mat_varcov(2,2);
+            test_t_est(2)= coef(3) / mat_varcov(3,3);
+            %test_f = ([coef(2); coef(3)] \) * [coef(2) , coef(3)]
                 
         end
 
-       
+
     end
 end

@@ -1,7 +1,7 @@
 classdef PreguntaI
     %objeto pensado en responder a la pregunta I. El metodo PreguntaI_est
     %es usado para realizar las estimaciones solicitados retornando los
-    %coeficientes y los respectivos errores estándar.
+    %coeficientes y los respectivos errores estándar. Luego se añade un método para realizar los test requeridos.
 
     properties
         Y
@@ -49,15 +49,12 @@ classdef PreguntaI
 %              test_t_est(1) = coef(2)/ sqrt(matriz_white(2,2));
 %              test_t_est(2) = coef(3)/ sqrt(matriz_white(3,3));
 
-           est_sigma = (err_st'*err_st) / (obj.N - size(regresores,2));
-           mat_var_cov = est_sigma * (regresores'*regresores)^(-1);
-           test_t_est(1) = coef(2)/ sqrt(mat_var_cov(2,2));
-           test_t_est(2) = coef(3)/ sqrt(mat_var_cov(3,3));
+            est_sigma = (err_st'*err_st) / (obj.N - size(regresores,2));
+            mat_var_cov = est_sigma * (regresores'*regresores)^(-1);
+            test_t_est(1) = coef(2)/ sqrt(mat_var_cov(2,2));
+            test_t_est(2) = coef(3)/ sqrt(mat_var_cov(3,3));
            R = [0 0; 1 0 ; 0 1; 0 0];
-           test_f = (R'*coef)' / (R' /  inv(regresores'*regresores) * R) * (R'*coef);
-
-%             test_f = ( [coef(2); coef(3) ]' \ ( (est_sigma* [1 0 0 0; 0 1 0 0]'...
-%                 \ (regresores'*regresores) ) *  [1 0 0 0; 0 1 0 0] ) )/2;    
+           test_f = ((R'*coef)' / (est_sigma * (R' /(regresores'*regresores)) * R) * (R'*coef))/2;  
 
         end
     end

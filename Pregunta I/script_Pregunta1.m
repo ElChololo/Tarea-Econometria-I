@@ -17,9 +17,9 @@ p1 =PreguntaI([1 2 4 6], [0 0 0], 1e3 , 1 ,1);
 [test_t_est, test_f]=p1.tests([ones(p1.N ,1) p1.X1 p1.X2 p1.X3]);
 test_t_est_graf = zeros(2,50);
 test_f_est_graf = zeros(1,50);
-for ii =1:50
+for ii =1:500
     s = PreguntaI([1 2 4 6], [0 0 0], 1000, ii/100 , 1);
-    [test_t_est] = s.tests([ones(p1.N,1) s.X1 s.X2 s.X3]);
+    [test_t_est, test_f] = s.tests([ones(p1.N,1) s.X1 s.X2 s.X3]);
     test_t_est_graf (1,ii) = test_t_est(1);
     test_t_est_graf(2,ii)= test_t_est(2);
     test_f_est_graf(ii)=test_f;
@@ -28,7 +28,7 @@ end
 figure(1)
 clf
 
-plot( (1:50)/100 ,test_t_est_graf(1,:),'g',(1:50)/100 ,test_t_est_graf(2,:),'b')
+plot( (1:500)/100 ,test_t_est_graf(1,:),'g',(1:500)/100 ,test_t_est_graf(2,:),'b')
 title('Estadístico t ante cambios en \sigma_v')
 xlabel('\sigma_v')
 ylabel('estadístico t-student')
@@ -39,7 +39,7 @@ test_f;
 figure(2)
 clf
 
-plot( (1:50)/100 ,test_f_est_graf,'k')
+plot( (1:500)/100 ,test_f_est_graf,'k')
 title('Estadístico F ante cambios en \sigma_v')
 xlabel('\sigma_v')
 ylabel('estadístico F')

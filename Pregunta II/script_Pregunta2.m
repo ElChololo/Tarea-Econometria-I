@@ -1,0 +1,1 @@
+df = PreguntaII('simce.csv','prior_sep.csv');

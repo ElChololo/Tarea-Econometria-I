@@ -1,16 +1,16 @@
 %% Pregunta 1
 p1 = PreguntaI([1 2 4 6], [0 5 7], 1e3 , 1 ,1);
 %% Pregunta 2
-p2 = p1.PreguntaI_est([ones(p1.N,1) p1.X1 p1.X2 p1.X3])
+[p2, est_sigma] = p1.PreguntaI_est([ones(p1.N,1) p1.X1 p1.X2 p1.X3]);
 %% Pregunta 3
-p3 = p1.PreguntaI_est([ones(p1.N,1) p1.X1 p1.X2])
+[p3, est_sigma] = p1.PreguntaI_est([ones(p1.N,1) p1.X1 p1.X2]);
 %% Pregunta 4
-p4 = p1.PreguntaI_est([ones(p1.N,1) p1.X1])
+[p4, est_sigma] = p1.PreguntaI_est([ones(p1.N,1) p1.X1]);
 %% Pregunta 5
 p5_0 = PreguntaI([1 2 4 6], [0 0 0], 1e3 , 1 ,1);
-p5_1 = p5_0.PreguntaI_est([ones(p1.N,1) p1.X1 p1.X2 p1.X3])
-p5_2 = p5_0.PreguntaI_est([ones(p1.N,1) p1.X1 p1.X2 ])
-p5_3 = p5_0.PreguntaI_est([ones(p1.N,1) p1.X1])
+[p5_1, est_sigma] = p5_0.PreguntaI_est([ones(p1.N,1) p1.X1 p1.X2 p1.X3]);
+[p5_2, est_sigma] = p5_0.PreguntaI_est([ones(p1.N,1) p1.X1 p1.X2 ]);
+[p5_3, est_sigma] = p5_0.PreguntaI_est([ones(p1.N,1) p1.X1]);
 
 %% Pregunta 6
 p1 =PreguntaI([1 2 4 6], [0 0 0], 1e3 , 1 ,1);

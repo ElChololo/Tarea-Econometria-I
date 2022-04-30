@@ -21,7 +21,6 @@ classdef PreguntaI
 
     methods
         function obj = PreguntaI(beta,delta,N,var_v,var_e)
-            rng(1)
             obj.beta = beta;
             obj.delta = delta;
             obj.var_v=var_v;

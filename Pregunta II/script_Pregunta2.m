@@ -8,7 +8,8 @@ prioritarios = df.tabla{:,end} .* 100;
 
 %% Pregunta IV
 prioritarios_2 = prioritarios .^2;
-[coef, err_est, r2 , mvarcov]=df.mco_est([ones(df.obs,1)  prioritarios prioritarios_2 df.tabla{:, "cod_rural_rbd"} df.dummie_depe(:,2:end) df.dummie_grupo(:,2:end)])
+[coef, err_est, r2 , mvarcov]=df.mco_est([ones(df.obs,1)  prioritarios prioritarios_2 df.tabla{:, "cod_rural_rbd"} df.dummie_depe(:,2:end) df.dummie_grupo(:,2:end)]);
+coef, err_est, r2
 %% Pregunta V
 efecto_marginal = df.efc_marginal(prioritarios,coef,mvarcov);
 

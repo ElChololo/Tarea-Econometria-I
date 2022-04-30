@@ -20,7 +20,10 @@ classdef PreguntaI
     end
 
     methods
-        function obj = PreguntaI(beta,delta,N,var_v,var_e)
+        function obj = PreguntaI(beta,delta,N,var_v,var_e,bool_aleatorio)
+            if bool_aleatorio
+                rng(1)
+            end
             obj.beta = beta;
             obj.delta = delta;
             obj.var_v=var_v;
@@ -35,27 +38,29 @@ classdef PreguntaI
             obj.Y = repmat(beta(1),N,1) + beta(2)*obj.X1+beta(3)*obj.X2+beta(4)*obj.X3 + obj.U; 
         end
 
-        function [coef, est_sigma] = PreguntaI_est(obj,regresores)
+        function [coef, est_sigma,var_betas, err_est] = PreguntaI_est(obj,regresores)
             mco = @(Y,X) (X'*X)\(X'*Y);
             coef = mco(obj.Y ,regresores );
             err_est = obj.Y - regresores*coef;
-            est_sigma = sqrt((err_est'*err_est)/(obj.N - size(regresores,2)));
+            est_sigma = (err_est'*err_est)/(obj.N - size(regresores,2));
+            mat_var_cov = est_sigma *(regresores'*regresores)^(-1);
+            var_betas = sqrt(diag(mat_var_cov));
+            
 
         end
         function [test_t_est , test_f] = tests(obj,regresores)
             test_t_est = zeros(2,1);
-            [coef, est_sigma ] = PreguntaI_est(obj,regresores);
-%             matriz_white = (obj.N/ (obj.N - size(regresores,2)))* ...
-%                 ((regresores'*regresores)\((regresores.*err_st)'*(regresores.*err_st))) ...
-%                 / (regresores'*regresores);
-%              test_t_est(1) = coef(2)/ sqrt(matriz_white(2,2));
-%              test_t_est(2) = coef(3)/ sqrt(matriz_white(3,3));
-            est_sigma_2 = est_sigma^2;
-            mat_var_cov = est_sigma_2 * (regresores'*regresores)^(-1);
-            test_t_est(1) = coef(2)/ sqrt(mat_var_cov(2,2));
-            test_t_est(2) = coef(3)/ sqrt(mat_var_cov(3,3));
+            [coef, est_sigma ,~ ,err_est] = PreguntaI_est(obj,regresores);
+            matriz_white = (obj.N/ (obj.N - size(regresores,2)))* ...
+                ((regresores'*regresores)\((regresores.*err_est)'*(regresores.*err_est))) ...
+                / (regresores'*regresores);
+             test_t_est(1) = coef(2)/ sqrt(matriz_white(2,2));
+             test_t_est(2) = coef(3)/ sqrt(matriz_white(3,3));
+%             mat_var_cov = est_sigma * (regresores'*regresores)^(-1);
+%             test_t_est(1) = coef(2)/ sqrt(mat_var_cov(2,2));
+%             test_t_est(2) = coef(3)/ sqrt(mat_var_cov(3,3));
            R = [0 0; 1 0 ; 0 1; 0 0];
-           test_f = ((R'*coef)' / (est_sigma_2 * (R' /(regresores'*regresores)) * R) * (R'*coef))/2;  
+           test_f = ((R'*coef)' / (est_sigma * (R' /(regresores'*regresores)) * R) * (R'*coef))/2;  
 
         end
     end

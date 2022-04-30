@@ -37,13 +37,18 @@ classdef setII
             obj.regresores = [ones(obj.obs,1) obj.tabla{:,[  "prom_prioritario" "cod_rural_rbd"]} obj.dummie_depe(:,2:end) obj.dummie_grupo(:,2:end)];
             
         end
-        function [coef, err_est, r2 ,mvarcov ] = mco_est(obj,regresores)
+        function [coef, err_est_beta, r2 ,mvarcov ] = mco_est(obj,regresores)
             mco = @(Y,X) (X'*X)\(X'*Y);
             coef = mco(obj.prom_simce ,regresores );
             err_est = obj.prom_simce - regresores*coef;
-            est_sigma = (err_est'*err_est)/(obj.obs - size(regresores,2));
-            mvarcov = est_sigma*(regresores'*regresores)^(-1);
-            err_est= sqrt(diag(mvarcov));
+%             est_sigma = (err_est'*err_est)/(obj.obs - size(regresores,2));
+%             mvarcov = est_sigma*(regresores'*regresores)^(-1);
+
+            mvarcov = (obj.obs/ (obj.obs - size(regresores,2)))* ...
+                ((regresores'*regresores)\((regresores.*err_est)'*(regresores.*err_est))) ...
+                / (regresores'*regresores);
+             err_est_beta= sqrt(diag(mvarcov));
+
             y_desv_media = obj.prom_simce - mean(obj.prom_simce);
             r2 = 1 - (err_est'*err_est)/(y_desv_media'*y_desv_media);
             

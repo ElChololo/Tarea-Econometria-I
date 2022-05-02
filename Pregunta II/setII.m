@@ -38,11 +38,12 @@ classdef setII
             
         end
         function [est_descript_g ,est_descript_x_rural ,est_descript_x_grup, est_descript_x_depe ] = est_descript(obj)
+            % Hacer estadística descriptiva prom_simce según 4 criterios, datos genererales, datos por ruralidad, GSE y Dependencia 
             col_prom_simce = table(obj.prom_simce, 'VariableNames',{'Prom_Simce'});
             datos = [obj.tabla col_prom_simce];
 %             est = @(row_constraint) [ length(datos{row_constraint,end}) mean(datos{row_constraint,end}) std(datos{row_constraint,end}) ... 
 %                 min(datos{row_constraint,end}) max(datos{row_constraint,end})];
-%           hacer llamados a la funci�n, pero mejorar� la lectura del c�digo? = est(ones(obj.obs,1))
+%           hacer llamados a la función, pero mejorará la lectura del código? = est(ones(obj.obs,1))
             est_descript_g = [ length(datos{:,end}) mean(datos{:,end}) std(datos{:,end}) min(datos{:,end}) max(datos{:,end})];
             row_urb = datos{:,"cod_rural_rbd"} ==1;
             row_rural = datos{:,"cod_rural_rbd"} ==2;
@@ -73,9 +74,12 @@ classdef setII
         end
 
         function [coef, err_est_beta, r2 ,mvarcov ] = mco_est(obj,regresores)
+        %Método enfocado en la estimación de MCO obteniendo los errores estándar de los coeficientes, R^2 y matriz de varianza y covarianza, insumo necesario para ejecutar 
+        %La pregunta 7.
             mco = @(Y,X) (X'*X)\(X'*Y);
             coef = mco(obj.prom_simce ,regresores );
             err_est = obj.prom_simce - regresores*coef;
+            %No suponemos homocedasticidad en el modelo
 %             est_sigma = (err_est'*err_est)/(obj.obs - size(regresores,2));
 %             mvarcov = est_sigma*(regresores'*regresores)^(-1);
 
@@ -91,6 +95,7 @@ classdef setII
             
         end
         function efecto_marginal= efc_marginal(obj,prioritarios,coef,mvarcov)
+        %Método diseñado para obtener y gráficar los efectos marginales requeridos
             betas_obj = coef(2:3);
             efecto_marginal = betas_obj(1) + 2 * betas_obj(2)*prioritarios;
             figure(3)

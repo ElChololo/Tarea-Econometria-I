@@ -76,6 +76,9 @@ classdef setII
             mco = @(Y,X) (X'*X)\(X'*Y);
             coef = mco(obj.prom_simce ,regresores );
             err_est = obj.prom_simce - regresores*coef;
+            %Se decide utilizar estimación robusta a heterocedasticidad
+            %pero se deja planteada (comentada) la inferenceia utilizando
+            %homocedasticidad
 %             est_sigma = (err_est'*err_est)/(obj.obs - size(regresores,2));
 %             mvarcov = est_sigma*(regresores'*regresores)^(-1);
 
@@ -100,6 +103,7 @@ classdef setII
             xlabel('prioritarios');
             ylabel('Efecto sobre el puntaje Simce');
             legend('Efecto variable prioritarios sobre puntaje Simce');
+            saveas(gcf,'Ef_marginal.jpg')
             rango_valores_prioritarios=(1:101)-1;
             efecto_marginal_rango = betas_obj(1) + 2 * betas_obj(2)*rango_valores_prioritarios;
             var_efecto_marginal = mvarcov(2,2) +4*(rango_valores_prioritarios.^2).*mvarcov(3,3)+4*rango_valores_prioritarios.*mvarcov(3,2);
@@ -116,6 +120,7 @@ classdef setII
             xlabel('prioritarios');
             ylabel('Efecto sobre el puntaje Simce');
             legend('Efecto variable prioritarios sobre puntaje Simce','Intervalo de confianza');
+            saveas(gcf,'Ef_marginal_int_conf.jpg')
         end
         
         

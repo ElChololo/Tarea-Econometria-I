@@ -51,6 +51,9 @@ classdef PreguntaI
         function [test_t_est , test_f] = tests(obj,regresores)
             test_t_est = zeros(2,1);
             [coef, est_sigma ,~ ,err_est] = PreguntaI_est(obj,regresores);
+            %Se decide utilizar estimación robusta a heterocedasticidad
+            %pero se deja planteada (comentada) la inferenceia utilizando
+            %homocedasticidad
             matriz_white = (obj.N/ (obj.N - size(regresores,2)))* ...
                 ((regresores'*regresores)\((regresores.*err_est)'*(regresores.*err_est))) ...
                 / (regresores'*regresores);

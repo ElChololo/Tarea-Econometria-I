@@ -6,9 +6,9 @@ classdef setII
         idx
         prom_simce
         obs
-        regresores
         dummie_grupo
         dummie_depe
+        dummie_rural
     end
 
     methods
@@ -34,9 +34,44 @@ classdef setII
             obj.obs = size(obj.tabla,1);
             obj.dummie_depe = dummyvar(obj.tabla{:,2});
             obj.dummie_grupo = dummyvar(obj.tabla{:,3});
-            obj.regresores = [ones(obj.obs,1) obj.tabla{:,[  "prom_prioritario" "cod_rural_rbd"]} obj.dummie_depe(:,2:end) obj.dummie_grupo(:,2:end)];
+            obj.dummie_rural = dummyvar(obj.tabla{:,4});
             
         end
+        function [est_descript_g ,est_descript_x_rural ,est_descript_x_grup, est_descript_x_depe ] = est_descript(obj)
+            col_prom_simce = table(obj.prom_simce, 'VariableNames',{'Prom_Simce'});
+            datos = [obj.tabla col_prom_simce];
+%             est = @(row_constraint) [ length(datos{row_constraint,end}) mean(datos{row_constraint,end}) std(datos{row_constraint,end}) ... 
+%                 min(datos{row_constraint,end}) max(datos{row_constraint,end})];
+%           hacer llamados a la función, pero mejorará la lectura del código? = est(ones(obj.obs,1))
+            est_descript_g = [ length(datos{:,end}) mean(datos{:,end}) std(datos{:,end}) min(datos{:,end}) max(datos{:,end})];
+            row_urb = datos{:,"cod_rural_rbd"} ==1;
+            row_rural = datos{:,"cod_rural_rbd"} ==2;
+            
+            est_descript_x_rural = [ length(datos{row_urb,end}) mean(datos{row_urb,end}) std(datos{row_urb,end}) min(datos{row_urb,end}) max(datos{row_urb,end}) ; ...
+                length(datos{row_rural,end}) mean(datos{row_rural,end}) std(datos{row_rural,end}) min(datos{row_rural,end}) max(datos{row_rural,end})];
+            
+            row_bajo = datos{:,"cod_grupo"} ==1;
+            row_med_bajo = datos{:,"cod_grupo"} ==2;
+            row_med = datos{:,"cod_grupo"} ==3;
+            row_med_alto = datos{:,"cod_grupo"} ==4;
+            row_alto = datos{:,"cod_grupo"} ==5;
+            
+            est_descript_x_grup = [ length(datos{row_bajo,end}) mean(datos{row_bajo,end}) std(datos{row_bajo,end}) min(datos{row_bajo,end}) max(datos{row_bajo,end}) ; ...
+                 length(datos{row_med_bajo,end}) mean(datos{row_med_bajo,end}) std(datos{row_med_bajo,end}) min(datos{row_med_bajo,end}) max(datos{row_med_bajo,end}) ; ...
+                 length(datos{row_med,end}) mean(datos{row_med,end}) std(datos{row_med,end}) min(datos{row_med,end}) max(datos{row_med,end}) ; ...
+                 length(datos{row_med_alto,end}) mean(datos{row_med_alto,end}) std(datos{row_med_alto,end}) min(datos{row_med_alto,end}) max(datos{row_med_alto,end}) ; ...
+                 length(datos{row_alto,end}) mean(datos{row_alto,end}) std(datos{row_alto,end}) min(datos{row_alto,end}) max(datos{row_alto,end})];
+            
+            row_muni = datos{:,"cod_depe2"} ==1;
+            row_part_subv = datos{:,"cod_depe2"} ==2;
+            row_part_pag = datos{:,"cod_depe2"} ==3;
+            
+            est_descript_x_depe = [ length(datos{row_muni,end}) mean(datos{row_muni,end}) std(datos{row_muni,end}) min(datos{row_muni,end}) max(datos{row_muni,end}) ; ...
+                length(datos{row_part_subv,end}) mean(datos{row_part_subv,end}) std(datos{row_part_subv,end}) min(datos{row_part_subv,end}) max(datos{row_part_subv,end}) ; ...
+                length(datos{row_part_pag,end}) mean(datos{row_part_pag,end}) std(datos{row_part_pag,end}) min(datos{row_part_pag,end}) max(datos{row_part_pag,end})];
+            
+        end
+
         function [coef, err_est_beta, r2 ,mvarcov ] = mco_est(obj,regresores)
             mco = @(Y,X) (X'*X)\(X'*Y);
             coef = mco(obj.prom_simce ,regresores );
@@ -61,7 +96,10 @@ classdef setII
             figure(3)
             clf
             plot(prioritarios,efecto_marginal,'r');
-            
+            title('Efecto Marginal de variable prioritarios sobre Puntaje Simce')
+            xlabel('prioritarios');
+            ylabel('Efecto sobre el puntaje Simce');
+            legend('Efecto variable prioritarios sobre puntaje Simce');
             rango_valores_prioritarios=(1:101)-1;
             efecto_marginal_rango = betas_obj(1) + 2 * betas_obj(2)*rango_valores_prioritarios;
             var_efecto_marginal = mvarcov(2,2) +4*(rango_valores_prioritarios.^2).*mvarcov(3,3)+4*rango_valores_prioritarios.*mvarcov(3,2);
@@ -74,6 +112,10 @@ classdef setII
             plot(rango_valores_prioritarios,int_con_inf,'g');
             hold on
             plot(rango_valores_prioritarios,int_con_sup,'g');
+            title({'Efecto Marginal de variable prioritarios sobre Puntaje Simce', 'y su intervalo de confianza al 95% de significancia'})
+            xlabel('prioritarios');
+            ylabel('Efecto sobre el puntaje Simce');
+            legend('Efecto variable prioritarios sobre puntaje Simce','Intervalo de confianza');
         end
         
         

@@ -96,7 +96,10 @@ classdef setII
             figure(3)
             clf
             plot(prioritarios,efecto_marginal,'r');
-            
+            title('Efecto Marginal de variable prioritarios sobre Puntaje Simce')
+            xlabel('prioritarios');
+            ylabel('Efecto sobre el puntaje Simce');
+            legend('Efecto variable prioritarios sobre puntaje Simce');
             rango_valores_prioritarios=(1:101)-1;
             efecto_marginal_rango = betas_obj(1) + 2 * betas_obj(2)*rango_valores_prioritarios;
             var_efecto_marginal = mvarcov(2,2) +4*(rango_valores_prioritarios.^2).*mvarcov(3,3)+4*rango_valores_prioritarios.*mvarcov(3,2);
@@ -109,6 +112,10 @@ classdef setII
             plot(rango_valores_prioritarios,int_con_inf,'g');
             hold on
             plot(rango_valores_prioritarios,int_con_sup,'g');
+            title({'Efecto Marginal de variable prioritarios sobre Puntaje Simce', 'y su intervalo de confianza al 95% de significancia'})
+            xlabel('prioritarios');
+            ylabel('Efecto sobre el puntaje Simce');
+            legend('Efecto variable prioritarios sobre puntaje Simce','Intervalo de confianza');
         end
         
         
